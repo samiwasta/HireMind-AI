@@ -42,5 +42,5 @@ test("registration -> first login password change -> login succeeds", async ({ p
   await page.getByPlaceholder("Enter your password").fill(updatedPassword);
   await page.getByRole("button", { name: "Login" }).click();
 
-  await expect(page.getByText("Login successful.")).toBeVisible();
+  await expect(page).toHaveURL("/overview");
 });

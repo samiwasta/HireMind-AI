@@ -1,3 +1,28 @@
+# 8 May 2026
+
+## Changes
+
+### 1) Overview page streaming and loading UI
+
+- `src/app/overview/page.tsx` now resolves `getDashboardProfile()` first for auth/redirect, then renders dashboard body behind multiple `React.Suspense` boundaries.
+- Lazy sections live in `src/features/dashboard/view/overview-streaming-sections.tsx` (stats, analytics, activity + top candidates, insights + upcoming). Related queries run in parallel inside each chunk where it reduces wait time (`Promise.all` for paired columns).
+- Layout-matched placeholders live in `src/features/dashboard/view/overview-skeletons.tsx` to reduce layout shift while Prisma work completes.
+- `src/features/dashboard/view/dashboard-shell.tsx` accepts `children` for the overview body so the shell/header/greeting can stream before heavier segments.
+
+### 2) Auth session deduplication
+
+- `getAuthSession` in `src/lib/auth-session.ts` is wrapped with `React.cache()` so parallel overview loaders share one JWT verification per request.
+
+### 3) Analytics chart container (Recharts)
+
+- `ResponsiveContainer` in `overview-analytics-section.tsx` uses a positive `initialDimension`, `minWidth={0}`, and stable chart wrapper height so the dev console warning about negative width/height on first paint is avoided.
+
+### 4) Dashboard header
+
+- Removed the secondary header CTA ("Generate Interview Questions"); "Create Interview" remains.
+
+---
+
 # 7 May 2026
 
 ## Changes
@@ -61,6 +86,8 @@
   - server-side validation and credential verification.
   - password visibility toggle with Lucide eye icons.
   - redirect to `/set-password` when first-login password reset is required.
+  - JWT session creation on successful login.
+  - redirect to `/overview` for authenticated users.
 - Registration flow implemented:
   - fields: `firstName`, `lastName`, `email`, `password`, `companyRole`, `privilageRole`.
   - password auto-generate action.
@@ -73,6 +100,9 @@
   - `New Password` + `Confirm Password` inputs.
   - updates hashed password and resets first-login flag.
   - redirects back to `/login`.
+- Logout route implemented:
+  - clears JWT auth cookie.
+  - redirects to `/login`.
 
 ### 7) Email Service Integration (Resend + React Email)
 
@@ -109,21 +139,77 @@
 - Script added:
   - `pnpm test:e2e`
 - End-to-end auth scenario verified:
-  - registration -> first-login redirect -> set-password -> login success.
+  - registration -> first-login redirect -> set-password -> login success -> `/overview`.
 
-### 10) Verification Completed
+### 10) Dashboard Feature (MVC + Modular Sidebar)
+
+- Dashboard was modularized into feature-based MVC structure:
+  - model: `src/features/dashboard/model/dashboard.model.ts`
+  - controller: `src/features/dashboard/controller/dashboard.controller.ts`
+  - views:
+    - `src/features/dashboard/view/dashboard-shell.tsx`
+    - `src/features/dashboard/view/dashboard-sidebar.tsx`
+- Routing changes:
+  - `/overview` is now the primary authenticated landing page.
+  - `/dashboard` redirects to `/overview` for backward compatibility.
+- Sidebar enhancements:
+  - improved visual hierarchy (main nav, workspace, profile section, logout action).
+  - micro animations via Framer Motion.
+  - profile section displays user initials.
+  - profile name/role resolved from current authenticated user session.
+- Hydration and SSR stability fixes:
+  - SSR-safe mobile detection via `useSyncExternalStore` in `src/hooks/use-mobile.ts`.
+  - tooltip-related sidebar hydration mismatch resolved.
+
+### 11) Framework and UX Polishing
+
+- `next.config.ts` updated to disable dev indicator icon (`devIndicators: false`).
+- Root layout metadata updated for HireMind AI branding.
+- Login route metadata added (`Login | HireMind AI`).
+- Chrome autofill styling refined to keep auth inputs visually consistent in light and dark themes.
+
+### 12) Verification Completed
 
 - `pnpm prisma generate` runs successfully.
 - `pnpm lint` runs successfully.
 - `pnpm build` runs successfully.
 - `pnpm test:e2e` runs successfully.
 
-### 11) Current State
+### 13) Current State
 
 - Project now has:
   - initialized UI foundations and design system
   - lint/format and pre-commit guardrails
   - Prisma + Neon database integration with migrations
   - full authentication flow with first-login password change
+  - JWT-based session management and authenticated profile resolution
   - email delivery integration via Resend and React Email templates
+  - modular dashboard architecture with animated sidebar UX
   - Playwright e2e coverage for the primary auth journey
+
+### 14) Overview Intelligence Modules and UX Enhancements
+
+- Overview analytics layout refined to avoid overflow/clipping and improve chart hierarchy:
+  - focused charts with tuned card heights and label sizing.
+  - responsive layout updates for better readability.
+- Recent Activity feed added as a dedicated module:
+  - event stream from real DB entities (interviews, evaluations, shortlisted candidates).
+  - row structure finalized as icon -> avatar -> content -> timestamp.
+  - fixed-height card with internal scroll and empty state.
+- Top Candidates section added:
+  - leaderboard-style table with candidate name, AI score, recommendation, and confidence chips.
+  - recommendation badges + colored indicators for fast scanning.
+  - fixed-height card and empty state handling.
+- AI Insights section added:
+  - computed insight messages derived from evaluation summaries and score trends.
+  - special-feature styling with compact insight cards and empty state support.
+- Upcoming Interviews widget added:
+  - real scheduled interview data from DB.
+  - compact List/Calendar toggle with icon controls.
+  - calendar mode includes per-day interview markers and tooltips.
+- Demo fallback data was removed from all overview intelligence modules:
+  - Recent Activity
+  - Top Candidates
+  - AI Insights
+  - Upcoming Interviews
+  - all now render only real DB-backed data with explicit empty states.

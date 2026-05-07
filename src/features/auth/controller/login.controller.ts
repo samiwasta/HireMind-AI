@@ -3,6 +3,7 @@
 import { loginSchema } from "@/features/auth/model/login.schema";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
+import { setAuthSession } from "@/lib/auth-session";
 import { redirect } from "next/navigation";
 
 export type LoginFormState = {
@@ -78,10 +79,6 @@ export async function loginAction(
     redirect(`/set-password?email=${encodeURIComponent(parsed.data.email)}`);
   }
 
-  return {
-    fields: {
-      email: parsed.data.email,
-    },
-    success: true,
-  };
+  await setAuthSession({ sub: user.id, email: parsed.data.email });
+  redirect("/overview");
 }
