@@ -10,14 +10,19 @@ HireMind AI is a Next.js app with Prisma ORM + Neon PostgreSQL setup, Tailwind C
 - shadcn UI
 - Prisma ORM v7
 - Neon PostgreSQL
+- Resend (transactional email)
+- React Email components
+- Playwright (E2E)
 - ESLint + Prettier + Husky + lint-staged
 
 ## Project Structure
 
 - `src/app`: App Router pages/layouts and global styles
 - `src/components`: shared UI components (including shadcn primitives)
+- `src/features`: feature-based modules (MVC structure for auth)
 - `src/lib`: shared utilities and Prisma client instance
 - `prisma`: Prisma schema and migrations
+- `tests/e2e`: Playwright end-to-end tests
 - `doc`: progress and development docs
 
 ## Setup
@@ -34,10 +39,13 @@ pnpm install
 cp .env.example .env
 ```
 
-3. Update `.env` with your Neon credentials:
+3. Update `.env` with required values:
 
 - `DATABASE_URL`: Neon pooled URL (runtime queries)
 - `DIRECT_URL`: Neon direct URL (Prisma CLI/migrations)
+- `RESEND_API_KEY`: API key from Resend
+- `RESEND_FROM_EMAIL`: verified sender email/domain in Resend
+- `NEXT_PUBLIC_APP_URL`: app URL (for links in emails)
 
 4. Generate Prisma client:
 
@@ -65,12 +73,42 @@ App runs at [http://localhost:3000](http://localhost:3000).
 - `pnpm prisma:generate`: generate Prisma client
 - `pnpm prisma:migrate`: create/apply development migration
 - `pnpm prisma:studio`: open Prisma Studio
+- `pnpm test:e2e`: run Playwright end-to-end tests
 
 ## Database Notes (Prisma v7 + Neon)
 
 - Prisma schema uses `prisma-client` generator with output in `src/generated/prisma`.
 - Prisma CLI connection is configured in `prisma.config.ts` using `DIRECT_URL`.
 - Runtime Prisma client uses Neon adapter from `@prisma/adapter-neon` in `src/lib/prisma.ts`.
+- Runtime import should use `@/generated/prisma/client`.
+
+## Authentication Flow
+
+- `/login`: email + password login with validation.
+- `/registration`: register users with:
+  - first/last name
+  - email
+  - password (manual or auto-generated)
+  - company role
+  - privilage role
+  - optional first-login password reset requirement
+- `/set-password`: forced password change flow for first login users.
+- `/forgot-password`: email-based reset request flow.
+
+## Email Flow (Resend + React Email)
+
+- Forgot-password action sends reset email.
+- Registration action sends credentials email with login button.
+- Email templates live under `src/features/auth/view/emails`.
+
+## Testing
+
+- Playwright setup is configured in `playwright.config.ts`.
+- Current e2e test validates:
+  - registration
+  - first-login redirect to set-password
+  - password change
+  - login with new password
 
 ## Development Log
 
