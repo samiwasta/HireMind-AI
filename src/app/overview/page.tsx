@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-import {
-  getAIInsights,
-  getDashboardProfile,
-  getRecentActivity,
-  getTopCandidates,
-  getUpcomingInterviews,
-  getOverviewAnalytics,
-  getOverviewStats,
-} from "@/features/dashboard/controller/dashboard.controller";
+import { getDashboardProfile } from "@/features/dashboard/controller/dashboard.controller";
 import { DashboardShell } from "@/features/dashboard/view/dashboard-shell";
+import {
+  OverviewActivityTopRowSkeleton,
+  OverviewAnalyticsSectionSkeleton,
+  OverviewInsightsUpcomingRowSkeleton,
+  OverviewStatsGridSkeleton,
+} from "@/features/dashboard/view/overview-skeletons";
+import {
+  OverviewActivityTopRow,
+  OverviewAnalyticsSectionLoader,
+  OverviewInsightsUpcomingRow,
+  OverviewStatsSection,
+} from "@/features/dashboard/view/overview-streaming-sections";
 
 export const metadata: Metadata = {
   title: "Overview | HireMind",
@@ -25,16 +30,8 @@ function getTimeBasedGreeting() {
 }
 
 export default async function OverviewPage() {
-  const [profile, stats, analytics, recentActivity, topCandidates, insights, upcomingInterviews] = await Promise.all([
-    getDashboardProfile(),
-    getOverviewStats(),
-    getOverviewAnalytics(),
-    getRecentActivity(),
-    getTopCandidates(),
-    getAIInsights(),
-    getUpcomingInterviews(),
-  ]);
-  if (!profile || !stats || !analytics || !recentActivity || !topCandidates || !insights || !upcomingInterviews) {
+  const profile = await getDashboardProfile();
+  if (!profile) {
     redirect("/login");
   }
 
@@ -48,12 +45,19 @@ export default async function OverviewPage() {
       pageTitle="Overview"
       greetingTitle={greetingTitle}
       greetingDescription={greetingDescription}
-      stats={stats}
-      analytics={analytics}
-      recentActivity={recentActivity}
-      topCandidates={topCandidates}
-      insights={insights}
-      upcomingInterviews={upcomingInterviews}
-    />
+    >
+      <Suspense fallback={<OverviewStatsGridSkeleton />}>
+        <OverviewStatsSection />
+      </Suspense>
+      <Suspense fallback={<OverviewAnalyticsSectionSkeleton />}>
+        <OverviewAnalyticsSectionLoader />
+      </Suspense>
+      <Suspense fallback={<OverviewActivityTopRowSkeleton />}>
+        <OverviewActivityTopRow />
+      </Suspense>
+      <Suspense fallback={<OverviewInsightsUpcomingRowSkeleton />}>
+        <OverviewInsightsUpcomingRow />
+      </Suspense>
+    </DashboardShell>
   );
 }

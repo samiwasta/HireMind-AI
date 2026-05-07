@@ -20,7 +20,7 @@ HireMind AI is a Next.js app with Prisma ORM + Neon PostgreSQL setup, Tailwind C
 - `src/app`: App Router pages/layouts and global styles
 - `src/components`: shared UI components (including shadcn primitives)
 - `src/features`: feature-based modules (MVC structure for auth)
-- `src/features/dashboard`: modular dashboard (model/controller/view)
+- `src/features/dashboard`: modular dashboard (model/controller/view; overview streaming sections and skeletons under `view/`)
 - `src/lib`: shared utilities and Prisma client instance
 - `prisma`: Prisma schema and migrations
 - `tests/e2e`: Playwright end-to-end tests
@@ -120,8 +120,10 @@ App runs at [http://localhost:3000](http://localhost:3000).
 - `/dashboard` redirects to `/overview` for compatibility.
 - Dashboard follows feature-based modular design:
   - `model`: navigation/profile contracts
-  - `controller`: authenticated profile retrieval from DB via JWT session
-  - `view`: shell and sidebar components separated
+  - `controller`: authenticated data loaders (stats, analytics, activity, etc.) scoped to the JWT user
+  - `view`: shell, sidebar, overview sections, and streaming helpers (see below)
+- Overview body uses **Suspense streaming**: the page loads the user profile first, then streams stats, analytics, activity/candidates, and insights/interviews as separate segments with skeleton fallbacks (`overview-skeletons.tsx`, `overview-streaming-sections.tsx`).
+- **`getAuthSession`** is wrapped with React **`cache()`** so parallel server requests in one navigation share a single session read/verify.
 - Sidebar includes:
   - hierarchical navigation groups
   - profile card with initials
@@ -151,6 +153,8 @@ Overview is now composed of modular, DB-backed sections:
 
 All overview modules render from real database queries scoped to the authenticated user.  
 When no records exist, sections show empty states instead of synthetic/demo rows.
+
+While segments are loading, skeleton placeholders mirror card layout and fixed heights (feed/chart areas) to keep the UI stable.
 
 ## Notes
 

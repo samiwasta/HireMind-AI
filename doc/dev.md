@@ -1,3 +1,28 @@
+# 8 May 2026
+
+## Changes
+
+### 1) Overview page streaming and loading UI
+
+- `src/app/overview/page.tsx` now resolves `getDashboardProfile()` first for auth/redirect, then renders dashboard body behind multiple `React.Suspense` boundaries.
+- Lazy sections live in `src/features/dashboard/view/overview-streaming-sections.tsx` (stats, analytics, activity + top candidates, insights + upcoming). Related queries run in parallel inside each chunk where it reduces wait time (`Promise.all` for paired columns).
+- Layout-matched placeholders live in `src/features/dashboard/view/overview-skeletons.tsx` to reduce layout shift while Prisma work completes.
+- `src/features/dashboard/view/dashboard-shell.tsx` accepts `children` for the overview body so the shell/header/greeting can stream before heavier segments.
+
+### 2) Auth session deduplication
+
+- `getAuthSession` in `src/lib/auth-session.ts` is wrapped with `React.cache()` so parallel overview loaders share one JWT verification per request.
+
+### 3) Analytics chart container (Recharts)
+
+- `ResponsiveContainer` in `overview-analytics-section.tsx` uses a positive `initialDimension`, `minWidth={0}`, and stable chart wrapper height so the dev console warning about negative width/height on first paint is avoided.
+
+### 4) Dashboard header
+
+- Removed the secondary header CTA ("Generate Interview Questions"); "Create Interview" remains.
+
+---
+
 # 7 May 2026
 
 ## Changes

@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 const AUTH_COOKIE_NAME = "hiremind_auth";
 
@@ -44,7 +45,7 @@ export async function clearAuthSession() {
   cookieStore.delete(AUTH_COOKIE_NAME);
 }
 
-export async function getAuthSession() {
+export const getAuthSession = cache(async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
   if (!token) {
@@ -62,4 +63,4 @@ export async function getAuthSession() {
   } catch {
     return null;
   }
-}
+});
