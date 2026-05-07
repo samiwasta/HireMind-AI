@@ -128,6 +128,30 @@ App runs at [http://localhost:3000](http://localhost:3000).
   - logout action
   - subtle Framer Motion micro-animations
 
+## Overview Modules
+
+Overview is now composed of modular, DB-backed sections:
+
+- Stats cards:
+  - Active Interviews
+  - Candidates
+  - AI Evaluations
+  - Shortlisted
+- Analytics:
+  - Hiring Funnel
+  - Weekly Activity
+- Recent Activity feed:
+  - latest interview/evaluation/shortlist events
+- Top Candidates:
+  - AI score, recommendation, confidence
+- AI Insights:
+  - generated insight cards derived from evaluation data and summaries
+- Upcoming Interviews:
+  - list + calendar toggle view with day-level interview tooltips
+
+All overview modules render from real database queries scoped to the authenticated user.  
+When no records exist, sections show empty states instead of synthetic/demo rows.
+
 ## Notes
 
 - Next dev indicator icon is disabled in `next.config.ts` via `devIndicators: false`.

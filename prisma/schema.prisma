@@ -12,15 +12,85 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CandidateStage {
+  APPLIED
+  SCREENING
+  INTERVIEW
+  SHORTLISTED
+  REJECTED
+  HIRED
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
 model User {
-  id            String   @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String   @unique
-  password      String
-  companyRole   String
-  privilageRole String
+  id                        String         @id @default(cuid())
+  firstName                 String
+  lastName                  String
+  email                     String         @unique
+  password                  String
+  companyRole               String
+  privilageRole             String
   setPasswordAfterFirstLogin Boolean @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  candidates                Candidate[]
+  interviews                Interview[]
+  aiEvaluations             AIEvaluation[]
+  createdAt                 DateTime       @default(now())
+  updatedAt                 DateTime       @updatedAt
+}
+
+model Candidate {
+  id           String         @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String
+  phone        String?
+  resumeUrl    String?
+  stage        CandidateStage @default(APPLIED)
+  shortlistedAt DateTime?
+  ownerId      String
+  owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  interviews   Interview[]
+  aiEvaluations AIEvaluation[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([ownerId])
+  @@index([stage])
+  @@unique([ownerId, email])
+}
+
+model Interview {
+  id          String          @id @default(cuid())
+  candidateId String
+  candidate   Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  status      InterviewStatus @default(SCHEDULED)
+  scheduledAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([ownerId, status])
+  @@index([candidateId])
+}
+
+model AIEvaluation {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  score       Int?
+  summary     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([ownerId])
+  @@index([candidateId])
 }

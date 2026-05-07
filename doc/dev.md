@@ -161,3 +161,30 @@
   - email delivery integration via Resend and React Email templates
   - modular dashboard architecture with animated sidebar UX
   - Playwright e2e coverage for the primary auth journey
+
+### 14) Overview Intelligence Modules and UX Enhancements
+
+- Overview analytics layout refined to avoid overflow/clipping and improve chart hierarchy:
+  - focused charts with tuned card heights and label sizing.
+  - responsive layout updates for better readability.
+- Recent Activity feed added as a dedicated module:
+  - event stream from real DB entities (interviews, evaluations, shortlisted candidates).
+  - row structure finalized as icon -> avatar -> content -> timestamp.
+  - fixed-height card with internal scroll and empty state.
+- Top Candidates section added:
+  - leaderboard-style table with candidate name, AI score, recommendation, and confidence chips.
+  - recommendation badges + colored indicators for fast scanning.
+  - fixed-height card and empty state handling.
+- AI Insights section added:
+  - computed insight messages derived from evaluation summaries and score trends.
+  - special-feature styling with compact insight cards and empty state support.
+- Upcoming Interviews widget added:
+  - real scheduled interview data from DB.
+  - compact List/Calendar toggle with icon controls.
+  - calendar mode includes per-day interview markers and tooltips.
+- Demo fallback data was removed from all overview intelligence modules:
+  - Recent Activity
+  - Top Candidates
+  - AI Insights
+  - Upcoming Interviews
+  - all now render only real DB-backed data with explicit empty states.
