@@ -142,4 +142,38 @@
   html {
     @apply font-sans;
   }
+  input[data-slot="input"]:-webkit-autofill,
+  input[data-slot="input"]:-webkit-autofill:hover,
+  input[data-slot="input"]:-webkit-autofill:focus,
+  input[data-slot="input"]:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  textarea:-webkit-autofill:active,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus,
+  select:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--foreground) !important;
+    caret-color: var(--foreground) !important;
+    border-color: var(--input) !important;
+    background-color: #f8fafc !important;
+    background-clip: padding-box !important;
+    -webkit-background-clip: padding-box !important;
+    box-shadow: 0 0 0 1000px #f8fafc inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+    transition: background-color 9999s ease-in-out 0s, color 9999s ease-in-out 0s;
+  }
+
+  .dark input[data-slot="input"]:-webkit-autofill,
+  .dark input[data-slot="input"]:-webkit-autofill:hover,
+  .dark input[data-slot="input"]:-webkit-autofill:focus,
+  .dark input[data-slot="input"]:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--foreground) !important;
+    caret-color: var(--foreground) !important;
+    border-color: var(--input) !important;
+    background-color: #020617 !important;
+    box-shadow: 0 0 0 1000px #020617 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px #020617 inset !important;
+  }
 }
