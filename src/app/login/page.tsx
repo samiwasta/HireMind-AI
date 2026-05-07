@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { LoginForm } from "@/features/auth/view/login-form";
+
+export const metadata: Metadata = {
+  title: "Login | HireMind AI",
+  description: "Login to your HireMind AI account",
+};
 
 export default function LoginPage() {
   return (
