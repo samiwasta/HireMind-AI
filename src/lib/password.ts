@@ -1,6 +1,10 @@
 import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 
+import { generateTemporaryPassword } from "@/lib/temporary-password";
+
+export { generateTemporaryPassword };
+
 const scrypt = promisify(scryptCallback);
 
 export async function hashPassword(password: string) {

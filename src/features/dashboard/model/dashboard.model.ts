@@ -80,7 +80,7 @@ export type UpcomingInterviewItem = {
 };
 
 export const mainNavigationItems: DashboardNavItem[] = [
-  { title: "Overview", href: "/overview", icon: "overview", isActive: true },
+  { title: "Overview", href: "/overview", icon: "overview" },
   { title: "Interviews", href: "/interviews", icon: "interviews" },
   { title: "Candidates", href: "/candidates", icon: "candidates" },
   { title: "Companies", href: "/companies", icon: "companies" },
