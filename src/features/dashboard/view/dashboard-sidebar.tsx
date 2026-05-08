@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {
   BarChart3,
   BookText,
+  Building2,
   Sparkles,
   Home,
   LogOut,
@@ -38,6 +39,7 @@ const iconMap: Record<DashboardNavItem["icon"], LucideIcon> = {
   overview: Home,
   interviews: Video,
   candidates: Users,
+  company: Building2,
   "ai-evaluations": Sparkles,
   analytics: BarChart3,
   "question-bank": BookText,

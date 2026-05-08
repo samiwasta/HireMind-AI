@@ -125,7 +125,7 @@ App runs at [http://localhost:3000](http://localhost:3000).
 - Overview body uses **Suspense streaming**: the page loads the user profile first, then streams stats, analytics, activity/candidates, and insights/interviews as separate segments with skeleton fallbacks (`overview-skeletons.tsx`, `overview-streaming-sections.tsx`).
 - **`getAuthSession`** is wrapped with React **`cache()`** so parallel server requests in one navigation share a single session read/verify.
 - Sidebar includes:
-  - hierarchical navigation groups
+  - hierarchical navigation groups (main nav: Overview, Interviews, Candidates, **Company** placeholder, AI Evaluations, Analytics)
   - profile card with initials
   - logout action
   - subtle Framer Motion micro-animations
