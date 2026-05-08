@@ -21,6 +21,11 @@
 
 - Removed the secondary header CTA ("Generate Interview Questions"); "Create Interview" remains.
 
+### 5) Sidebar: Company in main navigation
+
+- `mainNavigationItems` in `src/features/dashboard/model/dashboard.model.ts` includes **Company** immediately after **Candidates** (placeholder `href: "#"` until a dedicated page exists).
+- `DashboardNavItem["icon"]` extended with `company`; `dashboard-sidebar.tsx` maps it to Lucide **`Building2`**.
+
 ---
 
 # 7 May 2026

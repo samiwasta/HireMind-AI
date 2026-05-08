@@ -1,7 +1,16 @@
 export type DashboardNavItem = {
   title: string;
   href: string;
-  icon: "overview" | "interviews" | "candidates" | "ai-evaluations" | "analytics" | "question-bank" | "team" | "settings";
+  icon:
+    | "overview"
+    | "interviews"
+    | "candidates"
+    | "companies"
+    | "ai-evaluations"
+    | "analytics"
+    | "question-bank"
+    | "team"
+    | "settings";
   isActive?: boolean;
 };
 
@@ -72,10 +81,11 @@ export type UpcomingInterviewItem = {
 
 export const mainNavigationItems: DashboardNavItem[] = [
   { title: "Overview", href: "/overview", icon: "overview", isActive: true },
-  { title: "Interviews", href: "#", icon: "interviews" },
-  { title: "Candidates", href: "#", icon: "candidates" },
-  { title: "AI Evaluations", href: "#", icon: "ai-evaluations" },
-  { title: "Analytics", href: "#", icon: "analytics" },
+  { title: "Interviews", href: "/interviews", icon: "interviews" },
+  { title: "Candidates", href: "/candidates", icon: "candidates" },
+  { title: "Companies", href: "/companies", icon: "companies" },
+  { title: "AI Evaluations", href: "/ai-evaluations", icon: "ai-evaluations" },
+  { title: "Analytics", href: "/analytics", icon: "analytics" },
 ];
 
 export const secondaryNavigationItems: DashboardNavItem[] = [
