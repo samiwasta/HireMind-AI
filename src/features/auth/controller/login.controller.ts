@@ -41,58 +41,85 @@ export async function loginAction(
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: {
-      id: true,
-      password: true,
-      setPasswordAfterFirstLogin: true,
-      companyRole: true,
-    },
-  });
-
-  if (!user) {
-    return {
-      fields: {
-        email: parsed.data.email,
+  const emailLower = parsed.data.email.trim().toLowerCase();
+  const [hiremindUser, companyUser, candidateUser] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email: emailLower },
+      select: {
+        id: true,
+        password: true,
+        setPasswordAfterFirstLogin: true,
       },
-      errors: {
-        form: ["Invalid email or password"],
+    }),
+    prisma.companiesUser.findUnique({
+      where: { email: emailLower },
+      select: {
+        id: true,
+        password: true,
+        setPasswordAfterFirstLogin: true,
       },
-      success: false,
-    };
-  }
-
-  const isValidPassword = await verifyPassword(parsed.data.password, user.password);
-  if (!isValidPassword) {
-    return {
-      fields: {
-        email: parsed.data.email,
+    }),
+    prisma.candidate.findUnique({
+      where: { email: emailLower },
+      select: {
+        id: true,
+        password: true,
       },
-      errors: {
-        form: ["Invalid email or password"],
-      },
-      success: false,
-    };
-  }
-
-  if (user.setPasswordAfterFirstLogin) {
-    redirect(`/set-password?email=${encodeURIComponent(parsed.data.email)}`);
-  }
-
-  await setAuthSession({ sub: user.id, email: parsed.data.email });
+    }),
+  ]);
 
   const rawCallback = String(formData.get("callbackUrl") ?? "").trim();
   const callbackUrl =
     rawCallback.startsWith("/") && !rawCallback.startsWith("//") ? rawCallback : null;
 
-  if (user.companyRole === "Candidate") {
-    redirect("/candidate");
+  if (hiremindUser) {
+    const isValidPassword = await verifyPassword(parsed.data.password, hiremindUser.password);
+    if (isValidPassword) {
+      if (hiremindUser.setPasswordAfterFirstLogin) {
+        redirect(`/set-password?email=${encodeURIComponent(emailLower)}`);
+      }
+
+      await setAuthSession({ sub: hiremindUser.id, email: emailLower, accountType: "hiremind" });
+      if (callbackUrl) {
+        redirect(callbackUrl);
+      }
+      redirect("/overview");
+    }
   }
 
-  if (callbackUrl) {
-    redirect(callbackUrl);
+  if (companyUser) {
+    const isValidPassword = await verifyPassword(parsed.data.password, companyUser.password);
+    if (isValidPassword) {
+      if (companyUser.setPasswordAfterFirstLogin) {
+        return {
+          fields: { email: emailLower },
+          errors: {
+            form: ["Set your password using the email link sent during onboarding before signing in."],
+          },
+          success: false,
+        };
+      }
+
+      await setAuthSession({ sub: companyUser.id, email: emailLower, accountType: "company" });
+      redirect("/company");
+    }
   }
 
-  redirect("/overview");
+  if (candidateUser?.password) {
+    const isValidPassword = await verifyPassword(parsed.data.password, candidateUser.password);
+    if (isValidPassword) {
+      await setAuthSession({ sub: candidateUser.id, email: emailLower, accountType: "candidate" });
+      redirect("/candidate");
+    }
+  }
+
+  return {
+    fields: {
+      email: parsed.data.email,
+    },
+    errors: {
+      form: ["Invalid email or password"],
+    },
+    success: false,
+  };
 }

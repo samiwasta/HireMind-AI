@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/password";
 import { candidateRegistrationSchema } from "@/features/candidates/model/candidate-registration.schema";
 import { CandidateAccountCreatedEmail } from "@/features/candidates/view/emails/candidate-account-created-email";
 import { getResendClient } from "@/lib/resend";
@@ -115,6 +116,7 @@ export async function candidateRegistrationAction(
   }
 
   const emailLower = parsed.data.email.trim().toLowerCase();
+  const hashedPassword = await hashPassword(parsed.data.password);
 
   const existingCandidate = await prisma.candidate.findUnique({
     where: { email: emailLower },
@@ -138,6 +140,7 @@ export async function candidateRegistrationAction(
         firstName: parsed.data.firstName.trim(),
         lastName: parsed.data.lastName.trim(),
         email: emailLower,
+        password: hashedPassword,
         resumeUrl: resumeUrlRaw,
         ownerId: null,
       },

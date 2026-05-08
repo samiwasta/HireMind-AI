@@ -7,6 +7,7 @@ const AUTH_COOKIE_NAME = "hiremind_auth";
 type AuthTokenPayload = {
   sub: string;
   email: string;
+  accountType: "hiremind" | "company" | "candidate";
 };
 
 function getJwtSecret() {
@@ -20,7 +21,7 @@ function getJwtSecret() {
 }
 
 export async function createAuthToken(payload: AuthTokenPayload) {
-  return new SignJWT({ email: payload.email })
+  return new SignJWT({ email: payload.email, accountType: payload.accountType })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(payload.sub)
     .setIssuedAt()
@@ -56,10 +57,14 @@ export const getAuthSession = cache(async () => {
     const { payload } = await jwtVerify(token, getJwtSecret());
     const sub = payload.sub;
     const email = typeof payload.email === "string" ? payload.email : null;
+    const accountType =
+      payload.accountType === "hiremind" || payload.accountType === "company" || payload.accountType === "candidate"
+        ? payload.accountType
+        : "hiremind";
     if (!sub || !email) {
       return null;
     }
-    return { userId: sub, email };
+    return { userId: sub, email, accountType };
   } catch {
     return null;
   }
