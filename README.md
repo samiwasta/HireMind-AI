@@ -49,6 +49,7 @@ cp .env.example .env
 - `RESEND_FROM_EMAIL`: verified sender email/domain in Resend
 - `NEXT_PUBLIC_APP_URL`: app URL (for links in emails)
 - `AUTH_JWT_SECRET`: secret used to sign the auth JWT session cookie and **company setup** tokens (invite / set-password links for `Companies_User`)
+- `UPLOADTHING_SECRET`, `UPLOADTHING_TOKEN`: UploadThing credentials for resume uploads on `/registration` (from the UploadThing dashboard)
 
 4. Generate Prisma client:
 
@@ -87,24 +88,21 @@ App runs at [http://localhost:3000](http://localhost:3000).
 
 ## Authentication Flow
 
-- `/login`: email + password login with validation.
+- `/login`: email + password login with validation (optional `?next=/path` internal redirect after sign-in for hiring-team users).
 - JWT session cookie is created after successful login.
-- `/registration`: register users with:
-  - first/last name
-  - email
-  - password (manual or auto-generated)
-  - company role
-  - privilage role
-  - optional first-login password reset requirement
+- `/registration`: **public candidate registration** — first/last name, email, password, resume upload (UploadThing PDF). Creates a `Candidate` row only (`ownerId` null until assigned) and then redirects to `/login`. Sends a confirmation email when Resend is configured.
+- `/hiremind/registration`: **admin-only** HireMind team user registration (same form as before: company role, privilege role, optional first-login password reset). Requires an authenticated `User` whose `companyRole` is exactly `Admin`; others are redirected to `/overview`.
 - `/set-password`: forced password change flow for first login users.
 - `/forgot-password`: email-based reset request flow.
 - `/logout`: clears auth session and redirects to login.
+- `/candidate`: landing for users with `companyRole` `Candidate` after login (hiring-team users stay on `/overview`).
 
 ## Email Flow (Resend + React Email)
 
 - Forgot-password action sends reset email.
-- Registration action sends credentials email with login button.
-- Email templates live under `src/features/auth/view/emails`.
+- Candidate registration sends a candidate-account confirmation email with login button.
+- Candidate email template lives under `src/features/candidates/view/emails`.
+- HireMind registration and password-reset templates live under `src/features/auth/view/emails`.
 
 ## Testing
 

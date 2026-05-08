@@ -46,16 +46,16 @@ export function SetPasswordForm() {
                 autoComplete="new-password"
                 placeholder="Enter new password"
                 aria-invalid={Boolean(state.errors?.newPassword?.length)}
-                className="h-11 bg-background px-3 pr-10"
+                className="h-11 bg-background px-3 pr-11"
                 required
               />
               <button
                 type="button"
                 aria-label={showNewPassword ? "Hide new password" : "Show new password"}
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                className="absolute inset-y-0 right-2 flex w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
               >
-                {showNewPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showNewPassword ? <EyeOff className="size-4 shrink-0" /> : <Eye className="size-4 shrink-0" />}
               </button>
             </div>
             {state.errors?.newPassword?.length ? (
@@ -73,16 +73,16 @@ export function SetPasswordForm() {
                 autoComplete="new-password"
                 placeholder="Confirm new password"
                 aria-invalid={Boolean(state.errors?.confirmPassword?.length)}
-                className="h-11 bg-background px-3 pr-10"
+                className="h-11 bg-background px-3 pr-11"
                 required
               />
               <button
                 type="button"
                 aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                className="absolute inset-y-0 right-2 flex w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
               >
-                {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showConfirmPassword ? <EyeOff className="size-4 shrink-0" /> : <Eye className="size-4 shrink-0" />}
               </button>
             </div>
             {state.errors?.confirmPassword?.length ? (

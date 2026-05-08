@@ -2,6 +2,13 @@
 
 ## Changes
 
+### Candidate registration and email flow updates
+
+- **`/registration` (candidate):** now persists records in `Candidate` only (no `HireMind_User` row creation) and redirects to `/login` after successful submission.
+- **Candidate table mapping:** registration writes candidate profile fields (`firstName`, `lastName`, `email`, `resumeUrl`) with `ownerId = null` until assignment.
+- **Email template:** `src/features/candidates/view/emails/candidate-account-created-email.tsx` redesigned to a full HireMind account-created message with candidate details and login CTA.
+- **Email diagnostics:** candidate registration now logs Resend failures (`error` payload and thrown request errors) so delivery issues are visible during debugging.
+
 ### Companies (recruiter): CRUD, onboarding email, set-password link
 
 - **Route:** `/companies` (authenticated), layout via `DashboardShell` with `showWorkspaceGreeting={false}` and **`showHeaderCreateInterview={false}`** so the header does not show “Create Interview” on this page.

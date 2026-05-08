@@ -118,16 +118,16 @@ export function EditCompanyDialog({ row, open, onOpenChange }: EditCompanyDialog
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   placeholder="Leave blank to keep current password"
-                  className="h-10 rounded-lg pr-10"
+                  className="h-10 rounded-lg pr-11"
                   aria-invalid={Boolean(state.errors?.password?.length)}
                 />
                 <button
                   type="button"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute inset-y-0 right-2 flex w-9 items-center justify-center text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPassword ? <EyeOff className="size-4 shrink-0" /> : <Eye className="size-4 shrink-0" />}
                 </button>
               </div>
               {state.errors?.password?.[0] ? (

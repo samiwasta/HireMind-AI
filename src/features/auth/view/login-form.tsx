@@ -27,7 +27,11 @@ function LoginSubmitButton() {
   );
 }
 
-export function LoginForm() {
+type LoginFormProps = {
+  redirectTo?: string;
+};
+
+export function LoginForm({ redirectTo }: LoginFormProps) {
   const [state, formAction] = useActionState(loginAction, initialState);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -42,6 +46,7 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-5" noValidate>
+          {redirectTo ? <input type="hidden" name="callbackUrl" value={redirectTo} /> : null}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -82,16 +87,16 @@ export function LoginForm() {
                 placeholder="Enter your password"
                 aria-invalid={Boolean(state.errors?.password?.length)}
                 aria-describedby={state.errors?.password?.length ? "password-error" : undefined}
-                className="h-11 bg-background px-3 pr-10"
+                className="h-11 bg-background px-3 pr-11"
                 required
               />
               <button
                 type="button"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="absolute inset-y-0 right-2 flex w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? <EyeOff className="size-4 shrink-0" /> : <Eye className="size-4 shrink-0" />}
               </button>
             </div>
             {state.errors?.password?.length ? (
@@ -102,6 +107,13 @@ export function LoginForm() {
           </div>
 
           <LoginSubmitButton />
+
+          <p className="text-center text-sm text-muted-foreground">
+            New Candidate?{" "}
+            <Link href="/registration" className="font-medium text-primary hover:text-primary-hover">
+              Create New Account
+            </Link>
+          </p>
 
           {state.errors?.form?.length ? (
             <p className="rounded-md bg-danger/10 px-3 py-2 text-center text-xs text-danger">
