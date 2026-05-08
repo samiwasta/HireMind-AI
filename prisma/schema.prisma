@@ -37,7 +37,8 @@ model User {
   companyRole                String
   privilageRole              String
   setPasswordAfterFirstLogin Boolean         @default(false)
-  candidates                 Candidate[]
+  candidatesOwned            Candidate[]     @relation("CandidateOwner")
+  candidateAccount           Candidate?      @relation("CandidateUserAccount")
   interviews                 Interview[]
   aiEvaluations              AIEvaluation[]
   companiesCreated           CompaniesUser[] @relation("CompanyCreator")
@@ -65,24 +66,25 @@ model CompaniesUser {
 }
 
 model Candidate {
-  id           String         @id @default(cuid())
-  firstName    String
-  lastName     String
-  email        String
-  phone        String?
-  resumeUrl    String?
-  stage        CandidateStage @default(APPLIED)
+  id            String         @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String         @unique
+  phone         String?
+  resumeUrl     String?
+  stage         CandidateStage @default(APPLIED)
   shortlistedAt DateTime?
-  ownerId      String
-  owner        User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  interviews   Interview[]
+  userId        String?        @unique
+  user          User?          @relation("CandidateUserAccount", fields: [userId], references: [id], onDelete: SetNull)
+  ownerId       String?
+  owner         User?          @relation("CandidateOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  interviews    Interview[]
   aiEvaluations AIEvaluation[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([ownerId])
   @@index([stage])
-  @@unique([ownerId, email])
 }
 
 model Interview {

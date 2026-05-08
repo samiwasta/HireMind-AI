@@ -126,16 +126,16 @@ export function RegistrationForm() {
                 onChange={(event) => setPasswordValue(event.target.value)}
                 placeholder="Enter a secure password"
                 aria-invalid={Boolean(state.errors?.password?.length)}
-                className="h-11 bg-background px-3 pr-10"
+                className="h-11 bg-background px-3 pr-11"
                 required
               />
               <button
                 type="button"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="absolute inset-y-0 right-2 flex w-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? <EyeOff className="size-4 shrink-0" /> : <Eye className="size-4 shrink-0" />}
               </button>
             </div>
             {state.errors?.password?.length ? (

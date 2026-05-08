@@ -47,6 +47,7 @@ export async function loginAction(
       id: true,
       password: true,
       setPasswordAfterFirstLogin: true,
+      companyRole: true,
     },
   });
 
@@ -80,5 +81,18 @@ export async function loginAction(
   }
 
   await setAuthSession({ sub: user.id, email: parsed.data.email });
+
+  const rawCallback = String(formData.get("callbackUrl") ?? "").trim();
+  const callbackUrl =
+    rawCallback.startsWith("/") && !rawCallback.startsWith("//") ? rawCallback : null;
+
+  if (user.companyRole === "Candidate") {
+    redirect("/candidate");
+  }
+
+  if (callbackUrl) {
+    redirect(callbackUrl);
+  }
+
   redirect("/overview");
 }
