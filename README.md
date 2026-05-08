@@ -21,6 +21,7 @@ HireMind AI is a Next.js app with Prisma ORM + Neon PostgreSQL setup, Tailwind C
 - `src/components`: shared UI components (including shadcn primitives)
 - `src/features`: feature-based modules (MVC structure for auth)
 - `src/features/dashboard`: modular dashboard (model/controller/view; overview streaming sections and skeletons under `view/`)
+- `src/features/companies`: recruiter flows for **Companies** accounts (`Companies_User`): create (dialog), list, edit, delete, emails, company set-password link
 - `src/lib`: shared utilities and Prisma client instance
 - `prisma`: Prisma schema and migrations
 - `tests/e2e`: Playwright end-to-end tests
@@ -47,7 +48,7 @@ cp .env.example .env
 - `RESEND_API_KEY`: API key from Resend
 - `RESEND_FROM_EMAIL`: verified sender email/domain in Resend
 - `NEXT_PUBLIC_APP_URL`: app URL (for links in emails)
-- `AUTH_JWT_SECRET`: secret used to sign auth JWT session cookie
+- `AUTH_JWT_SECRET`: secret used to sign the auth JWT session cookie and **company setup** tokens (invite / set-password links for `Companies_User`)
 
 4. Generate Prisma client:
 
@@ -114,6 +115,13 @@ App runs at [http://localhost:3000](http://localhost:3000).
   - password change
   - login with new password and redirect to `/overview`
 
+## Companies (recruiter)
+
+- **`/companies`:** HireMind users (recruiters) create **company accounts** stored as `Companies_User`. UI: **Add Company** opens a dialog; the table supports **edit** and **delete** (only companies **you** created: `createdByUserId`).
+- **Create:** Optional or generated temporary password; optional onboarding email via Resend (`RESEND_*`) with a **Set password** link to **`/companies/set-password?token=...`** (JWT, requires `AUTH_JWT_SECRET` and `NEXT_PUBLIC_APP_URL`).
+- **Public set-password:** Company users set a new password there, then sign in at `/login` when company login is wired to the same credentials.
+- Code lives under `src/features/companies/` (controllers, forms, dialogs, React Email template).
+
 ## Dashboard Architecture
 
 - Authenticated landing route is `/overview`.
@@ -125,7 +133,7 @@ App runs at [http://localhost:3000](http://localhost:3000).
 - Overview body uses **Suspense streaming**: the page loads the user profile first, then streams stats, analytics, activity/candidates, and insights/interviews as separate segments with skeleton fallbacks (`overview-skeletons.tsx`, `overview-streaming-sections.tsx`).
 - **`getAuthSession`** is wrapped with React **`cache()`** so parallel server requests in one navigation share a single session read/verify.
 - Sidebar includes:
-  - hierarchical navigation groups (main nav: Overview, Interviews, Candidates, **Company** placeholder, AI Evaluations, Analytics)
+  - hierarchical navigation groups (main nav: Overview, Interviews, Candidates, **Companies** → `/companies`, AI Evaluations, Analytics)
   - profile card with initials
   - logout action
   - subtle Framer Motion micro-animations

@@ -2,6 +2,18 @@
 
 ## Changes
 
+### Companies (recruiter): CRUD, onboarding email, set-password link
+
+- **Route:** `/companies` (authenticated), layout via `DashboardShell` with `showWorkspaceGreeting={false}` and **`showHeaderCreateInterview={false}`** so the header does not show “Create Interview” on this page.
+- **Data:** Prisma model `CompaniesUser` (`Companies_User` table): `company_name`, city, state, email, hashed password, `setPasswordAfterFirstLogin`, optional **`createdByUserId`** → HireMind `User` (only rows created by the signed-in recruiter are listed and editable).
+- **Migrations:** `hiremind_user_and_companies_user`, `companies_user_company_fields`, `companies_user_creator_and_password_flag` (creator FK + `setPasswordAfterFirstLogin`). Migration folders must always include `migration.sql`; empty migration directories cause Prisma **P3015**.
+- **Create:** Client **`CompaniesPageContent`** — “Add Company” opens a **dialog** with **`CreateCompanyForm`** (`variant="plain"`). Server action **`createCompanyAction`** hashes password, stores row, builds JWT setup token (`src/lib/company-setup-token.ts`, issuer `hiremind-company-setup`, uses **`AUTH_JWT_SECRET`**), sends React Email **`CompanyAccountCreatedEmail`** via Resend when configured.
+- **Password util split:** `src/lib/temporary-password.ts` uses **Web Crypto** `getRandomValues` so client bundles never import Node `scrypt` from `src/lib/password.ts` (fixes browser `promisify` / scrypt errors).
+- **Company first login:** Public **`/companies/set-password?token=...`** — **`companySetPasswordAction`** verifies token, updates password, clears `setPasswordAfterFirstLogin`, redirects to `/login`.
+- **Update / delete:** **`updateCompanyAction`** / **`deleteCompanyAction`** in `manage-company.controller.ts` enforce **`createdByUserId === session.userId`**. Edit dialog: optional new password (≥ 8 chars). Delete dialog: destructive confirmation.
+- **UI files:** `src/features/companies/` (schemas, controllers, `companies-table.tsx`, `companies-page-content.tsx`, `create-company-form.tsx`, `edit-company-dialog.tsx`, `delete-company-dialog.tsx`, email template under `view/emails/`).
+- **Navigation:** Sidebar **Companies** → `/companies` (see `dashboard.model.ts`).
+
 ### 1) Overview page streaming and loading UI
 
 - `src/app/overview/page.tsx` now resolves `getDashboardProfile()` first for auth/redirect, then renders dashboard body behind multiple `React.Suspense` boundaries.
@@ -21,10 +33,10 @@
 
 - Removed the secondary header CTA ("Generate Interview Questions"); "Create Interview" remains.
 
-### 5) Sidebar: Company in main navigation
+### 5) Sidebar: Companies in main navigation
 
-- `mainNavigationItems` in `src/features/dashboard/model/dashboard.model.ts` includes **Company** immediately after **Candidates** (placeholder `href: "#"` until a dedicated page exists).
-- `DashboardNavItem["icon"]` extended with `company`; `dashboard-sidebar.tsx` maps it to Lucide **`Building2`**.
+- `mainNavigationItems` includes **Companies** with `href: "/companies"` (see Companies feature section above).
+- `DashboardNavItem["icon"]` includes `companies`; `dashboard-sidebar.tsx` maps it to Lucide **`Building2`**.
 
 ---
 

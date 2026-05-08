@@ -29,19 +29,39 @@ enum InterviewStatus {
 }
 
 model User {
-  id                        String         @id @default(cuid())
-  firstName                 String
-  lastName                  String
-  email                     String         @unique
-  password                  String
-  companyRole               String
-  privilageRole             String
-  setPasswordAfterFirstLogin Boolean @default(false)
-  candidates                Candidate[]
-  interviews                Interview[]
-  aiEvaluations             AIEvaluation[]
-  createdAt                 DateTime       @default(now())
-  updatedAt                 DateTime       @updatedAt
+  id                         String          @id @default(cuid())
+  firstName                  String
+  lastName                   String
+  email                      String          @unique
+  password                   String
+  companyRole                String
+  privilageRole              String
+  setPasswordAfterFirstLogin Boolean         @default(false)
+  candidates                 Candidate[]
+  interviews                 Interview[]
+  aiEvaluations              AIEvaluation[]
+  companiesCreated           CompaniesUser[] @relation("CompanyCreator")
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @updatedAt
+
+  @@map("HireMind_User")
+}
+
+model CompaniesUser {
+  id                         String   @id @default(cuid())
+  companyName                String   @map("company_name")
+  city                       String
+  state                      String
+  email                      String   @unique
+  password                   String
+  setPasswordAfterFirstLogin Boolean  @default(true)
+  createdByUserId            String?
+  createdBy                  User?    @relation("CompanyCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  @@index([createdByUserId])
+  @@map("Companies_User")
 }
 
 model Candidate {

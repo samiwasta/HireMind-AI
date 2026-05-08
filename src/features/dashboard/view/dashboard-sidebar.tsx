@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   BarChart3,
@@ -39,7 +40,7 @@ const iconMap: Record<DashboardNavItem["icon"], LucideIcon> = {
   overview: Home,
   interviews: Video,
   candidates: Users,
-  company: Building2,
+  companies: Building2,
   "ai-evaluations": Sparkles,
   analytics: BarChart3,
   "question-bank": BookText,
@@ -61,7 +62,15 @@ function getInitials(name: string) {
 }
 
 export function DashboardSidebar({ profile }: DashboardSidebarProps) {
+  const pathname = usePathname();
   const initials = getInitials(profile.name);
+
+  function navActive(href: string) {
+    if (href === "/overview") {
+      return pathname === "/overview" || pathname === "/dashboard";
+    }
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
 
   return (
     <Sidebar variant="inset">
@@ -80,6 +89,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
             <SidebarMenu className="mt-1">
               {mainNavigationItems.map((item) => {
                 const Icon = iconMap[item.icon];
+                const active = navActive(item.href);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <motion.div
@@ -90,7 +100,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                     >
                       <SidebarMenuButton
                         asChild
-                        isActive={item.isActive}
+                        isActive={active}
                         className="rounded-lg data-[active=true]:bg-sidebar-primary/15 data-[active=true]:text-sidebar-foreground data-[active=true]:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-sidebar-primary)_45%,transparent)] hover:bg-sidebar-accent/80"
                       >
                         <Link href={item.href}>

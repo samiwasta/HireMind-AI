@@ -11,7 +11,8 @@ function hasRequiredDelegates(client: PrismaClient) {
     typeof prismaAny.user !== "undefined" &&
     typeof prismaAny.candidate !== "undefined" &&
     typeof prismaAny.interview !== "undefined" &&
-    typeof prismaAny.aIEvaluation !== "undefined"
+    typeof prismaAny.aIEvaluation !== "undefined" &&
+    typeof prismaAny.companiesUser !== "undefined"
   );
 }
 

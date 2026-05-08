@@ -14,6 +14,9 @@ type DashboardShellProps = {
   pageTitle?: string;
   greetingTitle?: string;
   greetingDescription?: string;
+  showWorkspaceGreeting?: boolean;
+  /** When false, the header "Create Interview" action is hidden (e.g. Companies page). */
+  showHeaderCreateInterview?: boolean;
   children?: ReactNode;
 };
 
@@ -22,6 +25,8 @@ export function DashboardShell({
   pageTitle = "Dashboard",
   greetingTitle = "Welcome to HireMind Dashboard",
   greetingDescription = "Your sidebar layout is ready. You can now plug your modules here.",
+  showWorkspaceGreeting = true,
+  showHeaderCreateInterview = true,
   children,
 }: DashboardShellProps) {
   return (
@@ -36,27 +41,31 @@ export function DashboardShell({
               <h1 className="ml-3 text-sm font-semibold text-foreground">{pageTitle}</h1>
             </div>
             <div className="flex items-center gap-2">
-              <motion.div
-                whileHover={{ y: -1, scale: 1.01 }}
-                whileTap={{ y: 0, scale: 0.99 }}
-                transition={{ duration: 0.16 }}
-              >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-9 rounded-lg border-primary/25 bg-primary/5 px-3.5 text-primary hover:bg-primary/10 hover:text-primary-hover"
+              {showHeaderCreateInterview ? (
+                <motion.div
+                  whileHover={{ y: -1, scale: 1.01 }}
+                  whileTap={{ y: 0, scale: 0.99 }}
+                  transition={{ duration: 0.16 }}
                 >
-                  <Plus className="size-4" />
-                  Create Interview
-                </Button>
-              </motion.div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 rounded-lg border-primary/25 bg-primary/5 px-3.5 text-primary hover:bg-primary/10 hover:text-primary-hover"
+                  >
+                    <Plus className="size-4" />
+                    Create Interview
+                  </Button>
+                </motion.div>
+              ) : null}
             </div>
           </header>
           <main className="flex-1 bg-linear-to-b from-background to-secondary/20 p-6">
-            <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-[0_1px_0_0_color-mix(in_oklab,var(--color-border)_70%,transparent)]">
-              <h2 className="text-2xl font-semibold text-foreground">{greetingTitle}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{greetingDescription}</p>
-            </div>
+            {showWorkspaceGreeting ? (
+              <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-[0_1px_0_0_color-mix(in_oklab,var(--color-border)_70%,transparent)]">
+                <h2 className="text-2xl font-semibold text-foreground">{greetingTitle}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">{greetingDescription}</p>
+              </div>
+            ) : null}
             {children}
           </main>
         </SidebarInset>
