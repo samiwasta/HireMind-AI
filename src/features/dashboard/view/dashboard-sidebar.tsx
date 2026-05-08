@@ -73,7 +73,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
   }
 
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="inset" collapsible="none">
       <SidebarHeader>
         <div className="rounded-xl border border-sidebar-border/70 bg-linear-to-r from-sidebar-primary/12 via-sidebar-primary/6 to-transparent px-3 py-3">
           <Logo textClassName="text-sidebar-foreground tracking-[0.2em]" />

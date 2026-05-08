@@ -31,11 +31,11 @@ export function DashboardShell({
 }: DashboardShellProps) {
   return (
     <TooltipProvider>
-      <SidebarProvider>
+      <SidebarProvider className="h-svh overflow-hidden">
         <DashboardSidebar profile={profile} />
 
-        <SidebarInset>
-          <header className="flex h-14 items-center justify-between border-b border-border/80 bg-card/70 px-4 backdrop-blur-sm">
+        <SidebarInset className="h-svh overflow-hidden">
+          <header className="shrink-0 flex h-14 items-center justify-between border-b border-border/80 bg-card/70 px-4 backdrop-blur-sm">
             <div className="flex items-center">
               <SidebarTrigger />
               <h1 className="ml-3 text-sm font-semibold text-foreground">{pageTitle}</h1>
@@ -59,7 +59,7 @@ export function DashboardShell({
               ) : null}
             </div>
           </header>
-          <main className="flex-1 bg-linear-to-b from-background to-secondary/20 p-6">
+          <main className="min-h-0 flex-1 overflow-y-auto bg-linear-to-b from-background to-secondary/20 p-6">
             {showWorkspaceGreeting ? (
               <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-[0_1px_0_0_color-mix(in_oklab,var(--color-border)_70%,transparent)]">
                 <h2 className="text-2xl font-semibold text-foreground">{greetingTitle}</h2>
